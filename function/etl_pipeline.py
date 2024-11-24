@@ -15,6 +15,7 @@ logging.basicConfig(
 )
 
 def auth(config_file, section):
+    """Read database configuration and return DB URI."""
     config = configparser.ConfigParser()
     config.read(config_file)
 
@@ -24,17 +25,16 @@ def auth(config_file, section):
     port = config.get(section, 'port')
     database = config.get(section, 'database')
 
+    # Return connection URL as a string
     connection_url = URL.create(
-        drivername='postgresql',
+        drivername='postgresql+psycopg2',
         username=user,
         password=password,
         host=host,
         port=port,
         database=database
     )
-
-    engine = create_engine(connection_url, pool_recycle=3600)
-    return engine
+    return connection_url
 
 
 def extract_data(file_path):
@@ -77,11 +77,10 @@ def transform_data(branch_sales, online_sales, customer_data, inventory_data):
         raise
 
 
-def load_data_to_db(data, table_name, db_uri):
+def load_data_to_db(data, table_name, engine):
     """Load data into a PostgreSQL database."""
     try:
         logging.info(f"Loading data into {table_name}")
-        engine = create_engine(db_uri)
         data.to_sql(table_name, engine, if_exists='replace', index=False)
         logging.info(f"Successfully loaded data into {table_name}")
     except Exception as e:
@@ -92,7 +91,10 @@ def load_data_to_db(data, table_name, db_uri):
 if __name__ == "__main__":
     # Database configuration
     CONFIG_FILE = '/Users/szjm/A9/config.ini'
-    DB_URI = auth(CONFIG_FILE, 'postgresql')
+    DB_URI = auth(CONFIG_FILE, 'postgresql')  # Get the DB URI
+
+    # Create a single engine instance
+    engine = create_engine(DB_URI)
 
     # File paths
     BRANCH_SALES_PATH = '/Users/szjm/A9/data/Branch_Sales_Data_With_Issues.csv'
@@ -110,7 +112,8 @@ if __name__ == "__main__":
         branch_sales, online_sales, customer_data, inventory_data
     )
 
-    load_data_to_db(branch_sales_transformed, 'branch_sales', DB_URI)
-    load_data_to_db(online_sales_transformed, 'online_sales', DB_URI)
-    load_data_to_db(customer_data_transformed, 'customer_data', DB_URI)
-    load_data_to_db(inventory_data_transformed, 'inventory_data', DB_URI)
+    # Load data into the database
+    load_data_to_db(branch_sales_transformed, 'branch_sales', engine)
+    load_data_to_db(online_sales_transformed, 'online_sales', engine)
+    load_data_to_db(customer_data_transformed, 'customer_data', engine)
+    load_data_to_db(inventory_data_transformed, 'inventory_data', engine)
