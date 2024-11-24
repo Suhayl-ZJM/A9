@@ -1,10 +1,10 @@
 import pandas as pd
 
 # File paths
-BRANCH_SALES_PATH = '../data/Branch_Sales_Data.csv'
-ONLINE_SALES_PATH = '../data/Online_Sales_Data.csv'
-INVENTORY_PATH = '../data/Inventory_Data.csv'
-CUSTOMERS_PATH = '../data/Customer_Data.csv'
+BRANCH_SALES_PATH = '/Users/szjm/A9/data/Branch_Sales_Data.csv'
+ONLINE_SALES_PATH = '/Users/szjm/A9/data/Online_Sales_Data.csv'
+INVENTORY_PATH = '/Users/szjm/A9/data/Inventory_Data.csv'
+CUSTOMERS_PATH = '/Users/szjm/A9/data/Customer_Data.csv'
 
 # Load CSVs
 branch_sales = pd.read_csv(BRANCH_SALES_PATH)
@@ -55,7 +55,7 @@ new_online_sales_rows = pd.DataFrame({
 online_sales_with_issues = pd.concat([online_sales, new_online_sales_rows], ignore_index=True)
 
 # Save new CSVs with issues
-branch_sales_with_issues.to_csv('../data/Branch_Sales_Data_With_Issues.csv', index=False)
-customer_data_with_issues.to_csv('../data/Customer_Data_With_Issues.csv', index=False)
-inventory_data_with_issues.to_csv('../data/Inventory_Data_With_Issues.csv', index=False)
-online_sales_with_issues.to_csv('../data/Online_Sales_Data_With_Issues.csv', index=False)
+branch_sales_with_issues.to_csv('/Users/szjm/A9/data/Branch_Sales_Data_With_Issues.csv', index=False)
+customer_data_with_issues.to_csv('/Users/szjm/A9/data/Customer_Data_With_Issues.csv', index=False)
+inventory_data_with_issues.to_csv('/Users/szjm/A9/data/Inventory_Data_With_Issues.csv', index=False)
+online_sales_with_issues.to_csv('/Users/szjm/A9/data/Online_Sales_Data_With_Issues.csv', index=False)

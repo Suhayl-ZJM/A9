@@ -2,20 +2,44 @@ import pandas as pd
 import logging
 import configparser
 from sqlalchemy import create_engine
+from sqlalchemy.engine import URL
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-# Read database configuration from properties file
-config = configparser.ConfigParser()
-config.read('../db_config.properties')  # Corrected path
-DB_URI = config['DEFAULT']['DB_URI']  # Fetch the database URI
+# Function to authenticate and create DB URI from .ini file
+def auth(config_file, section):
+    config = configparser.ConfigParser()
+    config.read(config_file)
+
+    print(f"Sections found in {config_file}: {config.sections()}")
+
+    user = config.get(section, 'user')
+    password = config.get(section, 'password')
+    host = config.get(section, 'host')
+    port = config.get(section, 'port')
+    database = config.get(section, 'database')
+
+    # Create connection URL
+    connection_url = URL.create(
+        drivername='postgresql',
+        username=user,
+        password=password,
+        host=host,
+        port=port,
+        database=database
+    )
+    return connection_url
+
+# Read the DB connection URI from the .ini file
+CONFIG_FILE = '/Users/szjm/A9/config.ini'
+DB_URI = auth(CONFIG_FILE, 'postgresql')  # Fetch the connection URL
 
 # File paths (corrected relative paths)
-BRANCH_SALES_PATH = '../data/Branch_Sales_Data.csv'
-ONLINE_SALES_PATH = '../data/Online_Sales_Data.csv'
-INVENTORY_PATH = '../data/Inventory_Data.csv'
-CUSTOMERS_PATH = '../data/Customer_Data.csv'
+BRANCH_SALES_PATH = '/Users/szjm/A9/data/Branch_Sales_Data_With_Issues.csv'
+ONLINE_SALES_PATH = '/Users/szjm/A9/data/Online_Sales_Data_With_Issues.csv'
+INVENTORY_PATH = '/Users/szjm/A9/data/Inventory_Data_With_Issues.csv'
+CUSTOMERS_PATH = '/Users/szjm/A9/data/Customer_Data_With_Issues.csv'
 
 # ETL Pipeline Functions
 def extract_data(file_path):
