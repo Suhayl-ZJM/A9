@@ -50,28 +50,59 @@ def extract_data(file_path):
 def transform_data(branch_sales, online_sales, customer_data, inventory_data):
     """Transform data: standardise formats, handle missing values, and calculate metrics."""
     try:
+        # Transform Branch Sales Data
         logging.info("Transforming branch sales data...")
-        branch_sales['timestamp'] = pd.to_datetime(branch_sales['timestamp'], format='%Y-%m-%d %H:%M:%S', errors='coerce')
-        branch_sales.dropna(subset=['timestamp'], inplace=True)
-        branch_sales.drop_duplicates(inplace=True)
+        branch_sales['timestamp'] = pd.to_datetime(branch_sales['timestamp'], format='%m/%d/%Y', errors='coerce')
+
+        # Log rows with invalid timestamps
+        invalid_timestamps = branch_sales[branch_sales['timestamp'].isna()]
+        if not invalid_timestamps.empty:
+            logging.warning(f"Found {len(invalid_timestamps)} rows with invalid timestamps in branch sales.")
+            print(invalid_timestamps)
+
+        # Fill invalid timestamps with a default value
+        branch_sales['timestamp'].fillna(pd.Timestamp('1970-01-01 00:00:00'), inplace=True)
+        branch_sales['quantity'].fillna(0, inplace=True)
+        branch_sales['price'].fillna(0.0, inplace=True)
         branch_sales['total_sale'] = branch_sales['quantity'] * branch_sales['price']
+        branch_sales.drop_duplicates(inplace=True)
 
+        # Transform Online Sales Data
         logging.info("Transforming online sales data...")
-        online_sales['timestamp'] = pd.to_datetime(online_sales['timestamp'], format='%Y-%m-%d %H:%M:%S', errors='coerce')
-        online_sales.dropna(subset=['timestamp'], inplace=True)
-        online_sales.drop_duplicates(inplace=True)
+        online_sales['timestamp'] = pd.to_datetime(online_sales['timestamp'], format='%m/%d/%Y', errors='coerce')
+
+        # Log rows with invalid timestamps
+        invalid_timestamps = online_sales[online_sales['timestamp'].isna()]
+        if not invalid_timestamps.empty:
+            logging.warning(f"Found {len(invalid_timestamps)} rows with invalid timestamps in online sales.")
+            print(invalid_timestamps)
+
+        # Fill invalid timestamps with a default value
+        online_sales['timestamp'].fillna(pd.Timestamp('1970-01-01 00:00:00'), inplace=True)
+        online_sales['quantity'].fillna(0, inplace=True)
+        online_sales['price'].fillna(0.0, inplace=True)
+        online_sales['delivery_address'].fillna('Unknown', inplace=True)
         online_sales['total_sale'] = online_sales['quantity'] * online_sales['price']
+        online_sales.drop_duplicates(inplace=True)
 
+        # Transform Customer Data
         logging.info("Transforming customer data...")
-        customer_data.drop_duplicates(inplace=True)
-        customer_data['email'] = customer_data['email'].str.lower()  # Normalize email case
+        customer_data = customer_data.drop_duplicates().assign(
+            email=customer_data['email'].str.lower(),
+            loyalty_status=customer_data['loyalty_status'].fillna('Unknown')
+        )
 
+        # Transform Inventory Data
         logging.info("Transforming inventory data...")
-        inventory_data.drop_duplicates(inplace=True)
-        inventory_data['reorder_status'] = inventory_data['stock_level'] < inventory_data['reorder_level']
+        inventory_data = inventory_data.drop_duplicates().assign(
+            stock_level=inventory_data['stock_level'].fillna(0),
+            reorder_level=inventory_data['reorder_level'].fillna(0),
+            reorder_status=inventory_data['stock_level'] < inventory_data['reorder_level']
+        )
 
         logging.info("Transformation complete.")
         return branch_sales, online_sales, customer_data, inventory_data
+
     except Exception as e:
         logging.error(f"Error during transformation: {e}")
         raise
