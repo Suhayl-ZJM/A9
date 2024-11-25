@@ -107,7 +107,7 @@ def etl_pipeline():
 
         # Database configuration
         CONFIG_FILE = '/Users/szjm/A9/config.ini'
-        DB_URI = auth(CONFIG_FILE, 'postgresql')  # Get the DB URI
+        DB_URI = auth(CONFIG_FILE, 'postgresql')
 
         # Create a single engine instance
         engine = create_engine(DB_URI)
