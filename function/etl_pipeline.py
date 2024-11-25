@@ -15,7 +15,7 @@ logging.basicConfig(
 )
 
 def auth(config_file, section):
-    """Read database configuration and return DB URI."""
+    # Read database configuration and return DB URI
     config = configparser.ConfigParser()
     config.read(config_file)
 
@@ -38,7 +38,7 @@ def auth(config_file, section):
 
 
 def extract_data(file_path):
-    """Extract data from a CSV file."""
+    #Extract data from a CSV file
     try:
         logging.info(f"Extracting data from {file_path}")
         return pd.read_csv(file_path)
@@ -48,7 +48,7 @@ def extract_data(file_path):
 
 
 def transform_data(branch_sales, online_sales, customer_data, inventory_data):
-    """Transform data: standardise formats, handle missing values, and calculate metrics."""
+    # Transform data: standardise formats, handle missing values, and calculate metrics
     try:
         # Transform Branch Sales Data
         logging.info("Transforming branch sales data...")
@@ -109,7 +109,7 @@ def transform_data(branch_sales, online_sales, customer_data, inventory_data):
         logging.error(f"Error during transformation: {e}")
         raise
 
-    """Transform data: standardise formats, handle missing values, and calculate metrics."""
+    #Transform data: standardise formats, handle missing values, and calculate metrics
     try:
         # Transform Branch Sales Data
         logging.info("Transforming branch sales data...")
@@ -170,7 +170,7 @@ def transform_data(branch_sales, online_sales, customer_data, inventory_data):
 
 
 def load_data_to_db(data, table_name, engine):
-    """Load data into a PostgreSQL database."""
+    # Load data into a PostgreSQL database
     try:
         logging.info(f"Loading data into {table_name}")
         data.to_sql(table_name, engine, if_exists='replace', index=False)
@@ -183,7 +183,7 @@ def load_data_to_db(data, table_name, engine):
 if __name__ == "__main__":
     # Database configuration
     CONFIG_FILE = '/Users/szjm/A9/config.ini'
-    DB_URI = auth(CONFIG_FILE, 'postgresql')  # Get the DB URI
+    DB_URI = auth(CONFIG_FILE, 'postgresql')
 
     # Create a single engine instance
     engine = create_engine(DB_URI)
