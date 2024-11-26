@@ -4,16 +4,16 @@ from sqlalchemy import create_engine, inspect, text
 from etl_pipeline import auth, extract_data, transform_data, load_data_to_db
 
 class TestETLIntegration(unittest.TestCase):
-    """Integration tests for the ETL pipeline."""
+    #Integration tests for the ETL pipeline
 
     @classmethod
     def setUpClass(cls):
-        """Set up the database connection and create a test engine."""
+        # Set up the database connection and create a test engine
         CONFIG_FILE = '/Users/szjm/A9/config.ini'
         cls.engine = create_engine(auth(CONFIG_FILE, 'postgresql'))
 
     def setUp(self):
-        """Prepare sample data for testing."""
+        #Prepare sample data for testing
         self.sample_branch_sales = pd.DataFrame({
             'transaction_id': [1, 2],
             'branch_id': [101, 102],
@@ -47,7 +47,7 @@ class TestETLIntegration(unittest.TestCase):
         })
 
     def test_etl_pipeline_integration(self):
-        """Test the ETL pipeline end-to-end integration with the database."""
+        #Test the ETL pipeline end-to-end integration with the database
 
         # Step 1: Transform data
         branch_sales_transformed, online_sales_transformed, customer_data_transformed, inventory_data_transformed = transform_data(
@@ -92,7 +92,7 @@ class TestETLIntegration(unittest.TestCase):
             )
 
     def tearDown(self):
-        """Clean up the database after each test."""
+        # Clean up the database after each test.
         with self.engine.connect() as conn:
             conn.execute(text("DROP TABLE IF EXISTS test_branch_sales"))
             conn.execute(text("DROP TABLE IF EXISTS test_online_sales"))
@@ -101,7 +101,7 @@ class TestETLIntegration(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        """Dispose of the test engine."""
+        # Dispose of the test engine to allow re-testing.
         cls.engine.dispose()
 
 if __name__ == '__main__':

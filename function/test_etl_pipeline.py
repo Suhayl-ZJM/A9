@@ -15,7 +15,6 @@ test_log_file = "/Users/szjm/A9/logs/etl_tests.log"
 file_handler = logging.FileHandler(test_log_file)
 file_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
 
-# Avoid duplicate logs by removing existing handlers
 if test_logger.hasHandlers():
     test_logger.handlers.clear()
 
