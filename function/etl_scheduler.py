@@ -260,7 +260,7 @@ def etl_pipeline():
         logging.error(f"ETL pipeline failed: {e}")
 
 # Schedule the ETL pipeline to run daily at 6:00 PM
-schedule.every().day.at("10:30").do(etl_pipeline)
+schedule.every().day.at("18:30").do(etl_pipeline)
 
 logging.info("Scheduler started. Waiting to run tasks...")
 
